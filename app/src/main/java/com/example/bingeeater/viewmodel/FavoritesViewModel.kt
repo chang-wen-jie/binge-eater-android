@@ -81,7 +81,7 @@ class FavoritesViewModel(application: Application) : AndroidViewModel(applicatio
     }
 
     fun toggleFavorite(recipe: Recipe) {
-        val currentList = _savedRecipes.value.toMutableList() // Lijst is read-only
+        val currentList = _savedRecipes.value.toMutableList() // Objecten in lijst is readonly
 
         if (contains(recipe)) {
             currentList.removeAll { it.idMeal == recipe.idMeal }

@@ -46,12 +46,11 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
                 val url = URL("https://www.themealdb.com/api/json/v1/1/search.php?s=$safeQuery")
 
                 val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "GET"
                 connection.connectTimeout = 5000
                 connection.readTimeout = 5000
 
                 if (connection.responseCode == HttpURLConnection.HTTP_OK) {
-                    val responseText = connection.inputStream.bufferedReader().use { it.readText() } // Lees als Text
+                    val responseText = connection.inputStream.bufferedReader().use { it.readText() }
                     val jsonObject = JSONObject(responseText)
                     val mealsArray = jsonObject.optJSONArray("meals")
                     val parsedRecipes = mutableListOf<Recipe>()
@@ -63,8 +62,8 @@ class RecipeViewModel(application: Application) : AndroidViewModel(application) 
                                 Recipe(
                                     idMeal = mealObj.getString("idMeal"),
                                     strMeal = mealObj.getString("strMeal"),
-                                    strCategory = mealObj.optString("strCategory", null),
-                                    strInstructions = mealObj.optString("strInstructions", null),
+                                    strCategory = if (!mealObj.isNull("strCategory")) mealObj.getString("strCategory") else null,
+                                    strInstructions = if (!mealObj.isNull("strInstructions")) mealObj.getString("strInstructions") else null,
                                     strMealThumb = mealObj.getString("strMealThumb")
                                 )
                             )

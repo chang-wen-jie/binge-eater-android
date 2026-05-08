@@ -27,11 +27,11 @@ fun NetworkImage(url: String, modifier: Modifier = Modifier) {
     var bitmap by remember { mutableStateOf<ImageBitmap?>(null) }
 
     LaunchedEffect(url) {
-        withContext(Dispatchers.IO) { // Fetch afbeelding in achtergrond
+        withContext(Dispatchers.IO) {
             try {
                 val connection = URL(url).openConnection() as HttpURLConnection
-                connection.doInput = true
-                connection.connect()
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
                 val inputStream = connection.inputStream
                 val decodedBitmap = BitmapFactory.decodeStream(inputStream)
                 bitmap = decodedBitmap?.asImageBitmap()
@@ -41,14 +41,14 @@ fun NetworkImage(url: String, modifier: Modifier = Modifier) {
         }
     }
 
-    if (bitmap != null) {
+    bitmap?.let { nonNullBitmap ->
         Image(
-            bitmap = bitmap!!,
+            bitmap = nonNullBitmap,
             contentDescription = "Meal Thumbnail",
             contentScale = ContentScale.Crop,
             modifier = modifier
         )
-    } else {
+    } ?: run {
         Box(
             modifier = modifier,
             contentAlignment = Alignment.Center
